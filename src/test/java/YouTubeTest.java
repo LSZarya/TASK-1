@@ -15,7 +15,7 @@ public class YouTubeTest {
     public WebDriverWait wait;
 
     @BeforeTest
-    public void setUp() throws InterruptedException {
+    public void setUp() {
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
 
@@ -24,7 +24,6 @@ public class YouTubeTest {
 
         wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
-        Thread.sleep(3000);
     }
 
     @AfterTest
@@ -35,10 +34,17 @@ public class YouTubeTest {
     @Test
     public void YouTube_HoverVideo_Test() {
         By video = By.cssSelector("#contents #content img");
-        By hover = By.tagName("ytd-thumbnail-overlay-toggle-button-renderer");
+        By hover = By.cssSelector("ytd-moving-thumbnail-renderer img");
+
+        String video_no_hover = driver.findElement(video).getDomAttribute("src");
 
         Actions actionProvider = new Actions(driver);
         actionProvider.moveToElement(driver.findElement(video)).build().perform();
-        Assert.assertTrue(driver.findElement(hover).isDisplayed());
+
+        String video_hover = driver.findElement(hover).getDomAttribute("src");
+
+        if (video_no_hover.equals(video_hover)){
+            Assert.fail();
+        }
     }
 }
